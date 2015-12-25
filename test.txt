@@ -3,4 +3,9 @@ test4
 测试2
 测试1
 test4
+<<<<<<< HEAD
 啊哈哈！圣诞节快乐哈！
+=======
+Merry Christmas and Happy new year!
+Enjoy your holiday,richard!
+>>>>>>> origin/HEAD
