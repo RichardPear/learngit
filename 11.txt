@@ -1,1 +1,119 @@
-test
+
+
+一、会议开场 & 流程说明
+
+1. Good morning/afternoon everyone. Thank you for joining today’s Post Incident Review meeting.
+
+2. Today we will conduct a thorough review of the production incident that occurred on [date/time].
+
+3. The objectives of this meeting are: to clarify what happened, identify root causes, analyze impacts, and finalize corrective and preventive actions.
+
+4. Let’s keep the discussion focused, fact-based, and blame-free. This is a learning session, not a fault-finding one.
+
+5. I’ll guide us through the agenda: incident recap → timeline verification → impact assessment → root cause analysis → action items → follow-up plan.
+
+二、事故描述 & 时间线还原
+
+1. Let’s start with a quick recap of the incident.
+
+2. The incident was detected at [time] when [symptom, e.g., system downtime, service outage, performance drop].
+
+3. The issue affected [affected systems/services/users].
+
+4. Let’s walk through the timeline step by step to ensure accuracy.
+
+5. At [time], the first alert was triggered.
+
+6. The on-call team responded at [time] and began troubleshooting.
+
+7. The service was partially restored at [time] and fully recovered at [time].
+
+8. To confirm: is there any missing or incorrect information in the timeline?
+
+9. What were the key observations during the incident?
+
+三、影响 & 损失评估
+
+1. Let’s summarize the business and technical impacts of the incident.
+
+2. The incident caused [duration] of service unavailability.
+
+3. It impacted [number] of users, customers, or business processes.
+
+4. There was no data loss / Partial data loss / Temporary data inconsistency occurred.
+
+5. The estimated business impact includes [revenue loss, customer complaints, SLA violation].
+
+6. Did the incident lead to any secondary failures or cascading issues?
+
+四、根因分析 (RCA)
+
+1. Now let’s move into root cause analysis. We will use the 5-Whys method.
+
+2. What directly caused the incident?
+
+3. Why did this problem happen?
+
+4. Why didn’t the monitoring/alerting system catch it earlier?
+
+5. Why didn’t the preventive mechanism work?
+
+6. The immediate cause was [direct cause].
+
+7. The root cause is identified as [root cause, e.g., human error, configuration error, code bug, infrastructure failure, insufficient monitoring].
+
+8. We need to distinguish between contributing factors and root cause.
+
+9. Are there any other hidden causes we haven’t covered?
+
+五、应急处置复盘
+
+1. Let’s review how the team responded during the incident.
+
+2. The response actions taken included [troubleshooting steps, rollback, restart, failover].
+
+3. What was done well in the response?
+
+4. What could have been handled more efficiently?
+
+5. Was the communication during the incident clear and timely?
+
+6. Did we follow the incident response procedure correctly?
+
+六、整改 & 预防措施 (Action Items)
+
+1. Based on the root cause, we propose the following corrective and preventive actions.
+
+2. We need to define clear owner, deadline, and priority for each action.
+
+3. Action 1: [Short-term fix] – Owner: [Name] – Deadline: [Date]
+
+4. Action 2: [Long-term prevention] – Owner: [Name] – Deadline: [Date]
+
+5. Action 3: [Improve monitoring/alerting] – Owner: [Name] – Deadline: [Date]
+
+6. Action 4: [Update runbook/process/training] – Owner: [Name] – Deadline: [Date]
+
+7. All actions must be trackable and verifiable.
+
+8. We will schedule a follow-up meeting to check the progress of all actions.
+
+七、会议提问 & 确认
+
+1. Does anyone have additional findings or insights to share?
+
+2. Are there any different perspectives on the root cause?
+
+3. Let’s confirm the final conclusions and action items.
+
+4. Is everyone clear about their responsibilities and deadlines?
+
+5. If no further questions, let’s finalize the meeting notes and distribute them within 24 hours.
+
+八、会议结束
+
+1. Thank you all for your valuable input today.
+
+2. Let’s ensure all actions are implemented on time to avoid similar incidents in the future.
+
+3. The meeting is adjourned.
