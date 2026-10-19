@@ -1,0 +1,117 @@
+# 项目上下文：Task Web 动态表单与 Template 管理
+
+## 1. 技术背景
+- 前端：React
+- 后端：待结合现有系统确认
+- 数据库：PostgreSQL
+- 需求：在现有 Task Web 系统中增加动态表单（Dynamic Form）和 Template Management 功能。
+
+## 2. 核心数据库设计
+
+目前设计了 4 张核心表：
+
+1. `task`
+   - 保存 Task 通用业务字段，例如标题、描述、状态、优先级、负责人、创建人、截止时间等。
+2. `task_template`
+   - 保存模板元信息，例如模板标识、名称、描述、模板状态，以及 `current_version_id`。
+3. `task_template_version`
+   - 保存模板各版本的表单定义。
+   - `schema_json JSONB`：字段及数据结构定义。
+   - `ui_schema_json JSONB`：UI 布局、组件属性等配置。
+   - 每个模板使用递增的 `version_number`。
+4. `task_extra_data`
+   - 保存 Task 对应的动态表单数据。
+   - `task_id` 为主键，形成 Task 与动态数据的一对一关系。
+   - `template_version_id` 关联创建 Task 时使用的模板版本。
+   - `data_json JSONB` 保存用户填写的数据。
+
+## 3. 状态设计
+
+### Template 状态
+- `DRAFT`：草稿，尚未启用。
+- `ACTIVE`：启用，可用于创建新 Task。
+- `INACTIVE`：停用，禁止创建新 Task，但不影响历史数据。
+
+### Template Version 状态
+- `DRAFT`：草稿，可编辑，不可用于创建新 Task。
+- `PUBLISHED`：已发布，原则上不可修改。
+- `RETIRED`：历史版本，不可修改，不再用于创建新 Task。
+
+版本发布流程：
+
+`DRAFT → PUBLISHED → RETIRED`
+
+发布新版本时，旧发布版本转为 `RETIRED`，新版本转为 `PUBLISHED`，并更新 `task_template.current_version_id`。这些操作应放在同一个数据库事务中。
+
+## 4. 数据库约束与索引
+已整理完整 PostgreSQL DDL，包括：
+- 4 张表的字段、主键、外键和 CHECK 约束。
+- 所有必要字段的 `COMMENT ON TABLE` 和 `COMMENT ON COLUMN`。
+- 同一模板版本号唯一：`UNIQUE (template_id, version_number)`。
+- 同一模板最多一个 `PUBLISHED` 版本：部分唯一索引。
+- `current_version_id` 与模板版本之间的复合外键，保证版本归属正确。
+- JSONB 字段的对象类型校验。
+- Task、Template、Version、Extra Data 常用查询索引。
+- 可选的 `data_json` GIN 索引。
+- 自动更新 `updated_at` 的 PostgreSQL 触发器。
+
+注意：DDL 本身还不能保证 `current_version_id` 指向的版本一定是 `PUBLISHED`，也不能自动阻止已发布版本的 Schema 被修改，需要在服务层校验或增加数据库触发器。
+
+## 5. Template Management 页面规划
+
+建议提供独立的 Template Management 模块：
+- 模板列表、搜索、筛选。
+- 创建和编辑模板基本信息。
+- 编辑表单 Schema。
+- 表单实时预览。
+- 发布新版本。
+- 查看版本历史。
+- 启用和停用模板。
+
+第一阶段可以使用 JSON 编辑器加实时预览，后续再做可视化拖拽表单设计器。
+
+## 6. 表单引擎候选方案
+- SurveyJS：提供 React 表单渲染和可视化设计器，需确认商业许可证。
+- Formily：适合企业级 React Schema 表单，完整设计器需进一步评估。
+- Form.io：功能较完整，但需评估授权及平台依赖。
+- RJSF / JSON Forms：适合 JSON Schema 渲染，但不是开箱即用的完整可视化设计器。
+
+## 7. API 规划
+
+模板管理：
+- `GET /api/task-templates`
+- `POST /api/task-templates`
+- `GET /api/task-templates/{id}`
+- `PUT /api/task-templates/{id}`
+- `GET /api/task-templates/{id}/versions`
+- `POST /api/task-templates/{id}/versions`
+- `GET /api/task-template-versions/{versionId}`
+- `PUT /api/task-template-versions/{versionId}`
+- `POST /api/task-template-versions/{versionId}/publish`
+- `POST /api/task-templates/{id}/deactivate`
+
+Task：
+- 查询可用模板及当前发布版本。
+- 根据模板创建 Task。
+- 保存和更新动态表单数据。
+- 根据历史版本查看历史 Task 数据。
+
+## 8. 关键业务规则
+- 创建 Task 时，后端必须校验模板处于 `ACTIVE` 状态，且存在有效的当前发布版本。
+- Task 与 `task_extra_data` 应在同一个事务中创建。
+- 后端应根据绑定的模板版本校验 `data_json`，不能只依赖前端校验。
+- 历史 Task 始终关联原模板版本，发布新版本不能改变历史表单的解释方式。
+- 版本发布过程需要锁定模板，防止并发发布冲突。
+- 已发布或已退役版本不可直接修改 Schema。
+- 如果未来一个 Task 需要多份动态表单，需要调整 `task_extra_data` 当前的一对一设计。
+
+## 9. 下一步可继续的工作
+可以根据当前进度继续：
+1. 审查和完善完整 PostgreSQL DDL。
+2. 补充防止已发布版本被修改的数据库触发器。
+3. 设计完整的 Spring Boot API、DTO、Service、事务和 JSON Schema 校验。
+4. 设计 React Template Management 页面和组件结构。
+5. 选型并实现动态表单渲染器与可视化设计器。
+6. 补充数据库迁移脚本和集成测试。
+
+已有 DDL 的核心内容已经在上一 session 中给出；如果要继续修改，应先核对实际 SQL，再进行增量调整，不要假设新 session 自动包含完整 SQL。
